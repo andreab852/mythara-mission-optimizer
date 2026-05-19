@@ -1,0 +1,43 @@
+# MATLAB temporary files
+*.asv
+*.m~
+*.mex*
+*.slxc
+*.lxe
+slprj/
+codegen/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Generated run outputs and temporary files
+optimization/results*/
+results/
+**/logs/
+**/cache/
+*.fig
+
+# Large output images and diagnostics (keep only source docs/PDFs)
+*.png
+*.jpg
+*.jpeg
+
+# MATLAB execution artifacts
+*.log
+*.mat~
+mlx_backup/
+
+# Keep portfolio-ready deliverables
+!csv/
+!csv/*.csv
+!docs/
+!docs/*.pdf
+!docs/*.md
+!data/bodies.mat
+!optimization/submission/bodies.mat

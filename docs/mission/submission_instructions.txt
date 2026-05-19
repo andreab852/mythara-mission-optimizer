@@ -1,0 +1,101 @@
+================================================================================
+             Astrodynamics 2026 Project - SUBMISSION INSTRUCTIONS
+================================================================================
+
+1. SOLUTION STRUCT FORMAT
+-------------------------
+
+Your solution must be a MATLAB struct. Two input formats are supported:
+
+FORMAT A (recommended): Absolute flyby times
+  Field          Type          Units        Description
+  -----------    ----------    ---------    ------------------------------------
+  sequence       1xN double    (IDs)        Planet flyby sequence (e.g. [10 5 9 7])
+                                            Valid IDs: 4,5,6,7,8,9,10,1000
+  t_flyby        1xN double    years        Epoch of each flyby (strictly increasing)
+  Lambert_dir    1x(N-1)       0 or 1       Lambert path: 0=short, 1=long
+
+FORMAT B (legacy): First arrival + times of flight
+  Field          Type          Units        Description
+  -----------    ----------    ---------    ------------------------------------
+  sequence       1xN double    (IDs)        Planet flyby sequence
+  t1             scalar        years        Time of arrival at first planet
+  TOF            1x(N-1)       years        Time of flight for each leg
+  Lambert_dir    1x(N-1)       0 or 1       Lambert path: 0=short, 1=long
+
+  N = number of planets in the sequence (at least 2).
+
+
+2. EXAMPLES
+-----------
+
+  % Format A
+  solution.sequence    = [10, 5, 9, 7];
+  solution.t_flyby     = [48.7, 61.2, 91.3, 110.2];  % years
+  solution.Lambert_dir = [0, 1, 0];
+  solution_to_csv(solution, 'my_submission.csv');
+
+  % Format B
+  solution.sequence    = [10, 5, 9, 7];
+  solution.t1          = 48.7;
+  solution.TOF         = [12.5, 30.1, 18.9];
+  solution.Lambert_dir = [0, 1, 0];
+  solution_to_csv(solution, 'my_submission.csv');
+
+
+3. REQUIRED DEPENDENCIES
+------------------------
+
+Make sure the following are on your MATLAB path:
+  - Code/flyby_functions/   (KM_solver, lambert_universal, stumpff,
+                             compute_gtoc13_score)
+  - Code/submission/        (solution_to_csv.m)
+
+Required data file (in flyby_functions/):
+  - bodies.mat              (run generate_bodies.m if missing)
+
+No Neural Network model is required.
+
+
+4. WHAT THE CONVERTER DOES
+--------------------------
+
+  1. Validates your solution struct
+  2. Computes planet positions at each flyby epoch via KM_solver
+  3. Solves Lambert's problem for each transfer leg
+  4. Computes v_inf vectors at each flyby
+  5. Writes the 12-column CSV submission file
+  6. Computes and displays your score
+
+
+5. CSV FILE FORMAT
+------------------
+
+The output CSV has 12 comma-separated columns per row:
+
+  body_id, flag, epoch_sec, px, py, pz, vx, vy, vz, cx, cy, cz
+
+Where:
+  - body_id: Planet ID (>0 for flyby, 0 for conic arc)
+  - flag:    1 for flyby row, 0 for conic arc row
+  - epoch:   Time in seconds from t=0
+  - px,py,pz: Position [km]
+  - vx,vy,vz: Velocity [km/s]
+  - cx,cy,cz: Control vector (v_inf for flyby, [0,0,0] for conic)
+
+Each flyby has 2 rows (incoming + outgoing state), except the last (1 row).
+Each conic transfer arc has 2 rows (departure + arrival state).
+
+
+6. UPLOADING
+------------
+
+Upload the generated CSV file to the submission web app.
+The system will validate your trajectory and compute your score.
+
+Your score depends on:
+  - Which planets you visit and how many times
+  - The approach velocity at each flyby (lower is better)
+  - The "season" diversity of your flybys (different positions = better)
+
+================================================================================
